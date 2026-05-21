@@ -680,7 +680,7 @@ document.getElementById('leadForm').addEventListener('submit', function (e) {
     .then(function(res) {
         if (res.ok || res.success) {
             form.innerHTML = '<p style="color:#fff;font-size:1.2rem;padding:2rem 0;line-height:1.6;text-align:center">&#10003; Got it! We will call you within the hour.</p>';
-            popupShown = true; sessionStorage.setItem('popupShown','1');
+            popupShown = true; localStorage.setItem('popupShown','1');
         } else {
             btn.disabled = false;
             btn.textContent = 'Request Free Inspection \u2192';
@@ -689,19 +689,19 @@ document.getElementById('leadForm').addEventListener('submit', function (e) {
     .catch(function() {
         // Formspree succeeded but response parsing failed — treat as success
         form.innerHTML = '<p style="color:#fff;font-size:1.2rem;padding:2rem 0;line-height:1.6;text-align:center">&#10003; Got it! We will call you within the hour.</p>';
-        popupShown = true; sessionStorage.setItem('popupShown','1');
+        popupShown = true; localStorage.setItem('popupShown','1');
     });
 });
 
 // Exit intent popup - desktop: mouse leaves top of page only
-var popupShown = sessionStorage.getItem('popupShown');
+var popupShown = localStorage.getItem('popupShown');
 var isMobile = /Mobi|Android/i.test(navigator.userAgent);
 
 if (!isMobile) {
     document.addEventListener('mouseleave', function(e) {
         if (e.clientY < 10 && !popupShown) {
             popupShown = true;
-            sessionStorage.setItem('popupShown', '1');
+            localStorage.setItem('popupShown', '1');
             document.getElementById('exitPopup').classList.add('show');
         }
     });
@@ -711,7 +711,7 @@ if (isMobile && !popupShown) {
     setTimeout(function() {
         if (!popupShown) {
             popupShown = true;
-            sessionStorage.setItem('popupShown', '1');
+            localStorage.setItem('popupShown', '1');
             document.getElementById('exitPopup').classList.add('show');
         }
     }, 60000);
@@ -756,3 +756,4 @@ document.getElementById('exitForm').addEventListener('submit', function(e) {
 </div>
 </body>
 </html>
+
