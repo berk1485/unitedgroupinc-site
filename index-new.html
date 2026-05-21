@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>United Group Restorations - Storm Damage Experts</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: Arial, sans-serif; background: #fff; }
+
+/* NAV */
+.navbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+    background: rgba(0,51,102,0.93);
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.6rem 2rem;
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.nav-logo { display: flex; align-items: center; text-decoration: none; }
+.nav-logo img { height: 68px; display: block; }
+.navbar nav a {
+    color: white; text-decoration: none;
+    margin-left: 1.5rem; font-size: 0.95rem; opacity: 0.85;
+    transition: opacity 0.15s;
+}
+.navbar nav a:hover { opacity: 1; }
+
+/* HERO */
+#heroWrap { height: 550vh; position: relative; }
+
+/* Snap scroll — hero sections snap into place */
+html {
+    scroll-snap-type: y proximity;
+}
+#heroWrap {
+    scroll-snap-align: start;
+}
+.services, .gaf-section, .form-section {
+    scroll-snap-align: start;
+}
+#heroPin {
+    position: sticky; top: 0;
+    height: 100vh; width: 100%;
+    overflow: hidden;
+}
+.layer {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 100%;
+    background-size: cover;
+    background-position: center center;
+    will-change: transform, opacity;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+}
+#l1 { background-image: url('images/layer1-sky.jpg');          z-index: 1; }
+#l2 { background-image: url('images/layer2-neighborhood.jpg'); z-index: 2; opacity: 0; }
+#l3 { background-image: url('images/layer3-house.jpg');        z-index: 3; opacity: 0; }
+
+#heroOverlay {
+    position: absolute; inset: 0; z-index: 10;
+    background: linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,20,60,0.55) 100%);
+    pointer-events: none;
+}
+#heroText {
+    position: absolute; inset: 0; z-index: 11;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 0 1.5rem;
+    pointer-events: none;
+}
+.msg {
+    position: absolute;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    width: 100%;
+    /* slide-up entrance: starts 24px below, rises to 0 */
+    transform: translateY(24px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.msg.visible {
+    opacity: 1; transform: translateY(0); pointer-events: all;
+}
+#msg1 { opacity: 1; transform: translateY(0); }
+
+/* Progress dots */
+#progressDots {
+    position: absolute; right: 1.5rem; top: 50%;
+    transform: translateY(-50%);
+    z-index: 12;
+    display: flex; flex-direction: column; gap: 10px;
+}
+.dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: rgba(255,255,255,0.35);
+    border: 2px solid rgba(255,255,255,0.6);
+    transition: background 0.3s, transform 0.3s;
+    cursor: pointer;
+}
+.dot.active {
+    background: white;
+    transform: scale(1.35);
+}
+.msg h1 {
+    font-size: clamp(2.4rem, 7vw, 5rem);
+    font-weight: 900; color: #fff;
+    line-height: 1.05;
+    text-shadow: 0 3px 30px rgba(0,0,0,0.6);
+}
+.msg p {
+    margin-top: 1.1rem;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    color: rgba(255,255,255,0.9);
+    text-shadow: 0 1px 10px rgba(0,0,0,0.4);
+}
+.cta-btn {
+    display: inline-block; margin-top: 2rem;
+    padding: 1rem 2.8rem;
+    background: #fff; color: #003366;
+    font-weight: 800; font-size: 1.05rem;
+    border-radius: 3px; text-decoration: none;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    pointer-events: all;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+.cta-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+
+#scrollHint {
+    position: absolute; bottom: 1.8rem; left: 50%;
+    transform: translateX(-50%);
+    z-index: 12; text-align: center;
+    color: rgba(255,255,255,0.65); font-size: 0.75rem;
+    letter-spacing: 2px; text-transform: uppercase;
+    pointer-events: none;
+    animation: bob 2s ease-in-out infinite;
+}
+#scrollHint svg { display: block; margin: 4px auto 0; }
+@keyframes bob {
+    0%,100% { transform: translateX(-50%) translateY(0); }
+    50%      { transform: translateX(-50%) translateY(7px); }
+}
+
+/* SERVICES */
+.services { padding: 5rem 2rem; background: #f5f7fa; text-align: center; }
+.services h2 { font-size: 2.1rem; color: #003366; font-weight: 900; }
+.services .sub { color: #666; margin: 0.6rem 0 3rem; font-size: 1rem; }
+.cards {
+    display: flex; gap: 1.5rem; justify-content: center;
+    flex-wrap: wrap; max-width: 860px; margin: 0 auto;
+}
+.card {
+    background: #fff; border-radius: 8px;
+    padding: 2rem 1.5rem; flex: 1; min-width: 200px; max-width: 250px;
+    box-shadow: 0 2px 18px rgba(0,51,102,0.1);
+    border-top: 4px solid #003366;
+}
+.card .icon { margin-bottom: 0.75rem; }
+.card .icon svg { display: block; margin: 0 auto; }
+.card h3 { color: #003366; font-size: 1.1rem; font-weight: 700; margin-bottom: 0.4rem; }
+.card p { color: #555; font-size: 0.9rem; line-height: 1.55; }
+
+/* GAF SECTION */
+.gaf-section {
+    padding: 5rem 2rem; background: #fff;
+    border-top: 1px solid #e8edf5;
+}
+.gaf-inner {
+    max-width: 960px; margin: 0 auto;
+    display: flex; gap: 3rem; align-items: flex-start;
+    flex-wrap: wrap;
+}
+.gaf-logo-wrap {
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+}
+.gaf-logo-wrap img {
+    width: 180px; height: auto;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.12));
+}
+.gaf-content { flex: 1; min-width: 260px; }
+.gaf-content h2 {
+    font-size: 1.8rem; color: #003366; font-weight: 900;
+    margin-bottom: 0.5rem;
+}
+.gaf-sub { color: #555; font-size: 1rem; margin-bottom: 2rem; line-height: 1.5; }
+.gaf-guarantees { display: flex; flex-direction: column; gap: 1.4rem; }
+.gaf-item {
+    display: flex; gap: 1rem; align-items: flex-start;
+}
+.gaf-icon {
+    flex-shrink: 0; width: 44px; height: 44px;
+    background: rgba(0,51,102,0.07); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+}
+.gaf-item strong { display: block; color: #003366; font-size: 0.95rem; margin-bottom: 0.2rem; }
+.gaf-item p { color: #555; font-size: 0.88rem; line-height: 1.5; margin: 0; }
+@media (max-width: 640px) {
+    .gaf-inner { flex-direction: column; align-items: center; }
+    .gaf-logo-wrap img { width: 140px; }
+}
+
+/* FORM */
+.form-section { padding: 5rem 2rem; background: #003366; text-align: center; }
+.form-section h2 { color: #fff; font-size: 2rem; font-weight: 900; }
+.form-section .sub { color: rgba(255,255,255,0.7); margin: 0.6rem 0 2.5rem; }
+form { max-width: 520px; margin: 0 auto; }
+form input, form select {
+    display: block; width: 100%;
+    padding: 0.9rem 1rem; margin-bottom: 0.9rem;
+    border: none; border-radius: 4px; font-size: 1rem;
+    background: rgba(255,255,255,0.96);
+}
+form button {
+    width: 100%; padding: 1rem;
+    background: #fff; color: #003366;
+    font-weight: 800; font-size: 1rem;
+    border: none; border-radius: 4px; cursor: pointer;
+    transition: background 0.15s;
+}
+form button:hover { background: #dce6f5; }
+
+footer {
+    background: #001d40; color: rgba(255,255,255,0.45);
+    text-align: center; padding: 1.4rem; font-size: 0.82rem;
+}
+
+@media (max-width: 620px) {
+    .navbar nav { display: none; }
+    .cards { flex-direction: column; align-items: center; }
+    .card { max-width: 100%; width: 100%; }
+}
+
+/* STICKY CALL BUTTON (mobile only) */
+#stickyCall {
+    display: none;
+    position: fixed; bottom: 1.2rem; right: 1.2rem; z-index: 300;
+    background: #e31c1c; color: white;
+    padding: 0.9rem 1.4rem;
+    border-radius: 50px;
+    font-weight: 800; font-size: 1rem;
+    text-decoration: none;
+    box-shadow: 0 4px 20px rgba(227,28,28,0.5);
+    align-items: center; gap: 0.5rem;
+    animation: pulse 2s infinite;
+}
+@keyframes pulse {
+    0%,100% { box-shadow: 0 4px 20px rgba(227,28,28,0.5); }
+    50%      { box-shadow: 0 4px 32px rgba(227,28,28,0.8); }
+}
+@media (max-width: 768px) { #stickyCall { display: flex; } }
+
+/* HOW IT WORKS */
+.how-section { padding: 5rem 2rem; background: #003366; text-align: center; }
+.how-section h2 { color: white; font-size: 2rem; font-weight: 900; }
+.how-section .sub { color: rgba(255,255,255,0.7); margin: 0.5rem 0 3rem; }
+.steps { display: flex; gap: 0; justify-content: center; flex-wrap: wrap; max-width: 860px; margin: 0 auto; }
+.step {
+    flex: 1; min-width: 200px; max-width: 260px;
+    padding: 1.5rem; text-align: center; position: relative;
+}
+.step:not(:last-child)::after {
+    content: '\2192';
+    position: absolute; right: -10px; top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255,255,255,0.3); font-size: 1.5rem;
+}
+.step-num {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: white; color: #003366;
+    font-size: 1.3rem; font-weight: 900;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1rem;
+}
+.step h3 { color: white; font-size: 1.05rem; margin-bottom: 0.4rem; }
+.step p { color: rgba(255,255,255,0.7); font-size: 0.88rem; line-height: 1.5; }
+
+/* EXIT POPUP */
+#exitPopup {
+    display: none;
+    position: fixed; inset: 0; z-index: 500;
+    background: rgba(0,0,0,0.65);
+    align-items: center; justify-content: center;
+    padding: 1rem;
+}
+#exitPopup.show { display: flex; }
+.popup-box {
+    background: white; border-radius: 10px;
+    padding: 2.5rem 2rem; max-width: 420px; width: 100%;
+    text-align: center; position: relative;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+}
+.popup-box h3 { color: #003366; font-size: 1.5rem; font-weight: 900; margin-bottom: 0.5rem; }
+.popup-box p { color: #555; font-size: 0.95rem; margin-bottom: 1.5rem; }
+.popup-box input {
+    display: block; width: 100%;
+    padding: 0.85rem 1rem; margin-bottom: 0.75rem;
+    border: 1px solid #ddd; border-radius: 4px; font-size: 1rem;
+}
+.popup-box button {
+    width: 100%; padding: 1rem;
+    background: #003366; color: white;
+    font-weight: 800; font-size: 1rem;
+    border: none; border-radius: 4px; cursor: pointer;
+}
+.popup-close {
+    position: absolute; top: 0.75rem; right: 1rem;
+    font-size: 1.4rem; cursor: pointer; color: #999;
+    background: none; border: none;
+}
+.popup-note { color: #999; font-size: 0.78rem; margin-top: 0.75rem; }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="#" class="nav-logo">
+        <img src="images/logo-white.svg" alt="United Group Restorations">
+    </a>
+    <nav>
+        <a href="#services">Services</a>
+        <a href="#contact">Free Inspection</a>
+    </nav>
+</nav>
+
+<div id="heroWrap">
+    <div id="heroPin">
+        <div class="layer" id="l1"></div>
+        <div class="layer" id="l2"></div>
+        <div class="layer" id="l3"></div>
+        <div id="heroOverlay"></div>
+        <div id="heroText">
+            <div class="msg" id="msg1">
+                <h1>Protect What<br>Matters Most.</h1>
+                <p>Your home is your biggest investment.<br>We make sure it stays that way.</p>
+            </div>
+            <div class="msg" id="msg2">
+                <h1>We See What<br>Others Miss.</h1>
+                <p>Full roof-to-ground inspection.<br>Hail, wind, water &mdash; we find it all.</p>
+            </div>
+            <div class="msg" id="msg3">
+                <h1>Your Home.<br>Restored.</h1>
+                <p>Free inspection. Insurance claim handled. Done right.</p>
+                <a href="#contact" class="cta-btn">Get Free Inspection &rarr;</a>
+            </div>
+        </div>
+        <!-- Progress dots -->
+        <div id="progressDots">
+            <div class="dot active" id="dot1"></div>
+            <div class="dot" id="dot2"></div>
+            <div class="dot" id="dot3"></div>
+        </div>
+
+        <div id="scrollHint">
+            Scroll
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 3v14M4 11l6 6 6-6" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+    </div>
+</div>
+
+<section class="services" id="services">
+    <h2>What We Do</h2>
+    <p class="sub">Full storm restoration &mdash; from first inspection to final install.</p>
+    <div class="cards">
+        <div class="card">
+            <div class="icon">
+                <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 20L22 6l18 14v18H4V20z" stroke="#003366" stroke-width="2.5" stroke-linejoin="round" fill="rgba(0,51,102,0.08)"/>
+                    <path d="M16 38V26h12v12" stroke="#003366" stroke-width="2.5" stroke-linejoin="round"/>
+                    <path d="M22 6l-2 4h-6l2-4" stroke="#003366" stroke-width="2" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <h3>Roofing</h3>
+            <p>Complete roof repair and replacement after storm or hail damage. GAF Master Elite certified.</p>
+        </div>
+        <div class="card">
+            <div class="icon">
+                <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="8" y="6" width="10" height="32" rx="1" stroke="#003366" stroke-width="2.5" fill="rgba(0,51,102,0.08)"/>
+                    <rect x="20" y="6" width="10" height="32" rx="1" stroke="#003366" stroke-width="2.5" fill="rgba(0,51,102,0.08)"/>
+                    <line x1="8" y1="14" x2="18" y2="14" stroke="#003366" stroke-width="2"/>
+                    <line x1="20" y1="20" x2="30" y2="20" stroke="#003366" stroke-width="2"/>
+                    <line x1="8" y1="26" x2="18" y2="26" stroke="#003366" stroke-width="2"/>
+                </svg>
+            </div>
+            <h3>Siding</h3>
+            <p>Storm-damaged siding replaced fast. We work directly with your insurance adjuster.</p>
+        </div>
+        <div class="card">
+            <div class="icon">
+                <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 12h32" stroke="#003366" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M6 12c0 0 0 6 8 6s8-6 8-6 0 6 8 6 8-6 8-6" stroke="#003366" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M30 18v14a2 2 0 01-2 2h-4" stroke="#003366" stroke-width="2.5" stroke-linecap="round"/>
+                    <circle cx="22" cy="36" r="2" fill="#003366"/>
+                </svg>
+            </div>
+            <h3>Gutters</h3>
+            <p>Damaged gutters repaired and replaced to protect your home's foundation.</p>
+        </div>
+    </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+    <h2>How It Works</h2>
+    <p class="sub">Simple. Fast. No hassle.</p>
+    <div class="steps">
+        <div class="step">
+            <div class="step-num">1</div>
+            <h3>Free Inspection</h3>
+            <p>We assess your roof, siding, and gutters at no cost. Usually same or next day.</p>
+        </div>
+        <div class="step">
+            <div class="step-num">2</div>
+            <h3>Insurance Claim Filed</h3>
+            <p>We work directly with your insurance adjuster. You don't deal with the paperwork.</p>
+        </div>
+        <div class="step">
+            <div class="step-num">3</div>
+            <h3>Restoration Complete</h3>
+            <p>GAF Master Elite installation. Clean site, quality materials, done right the first time.</p>
+        </div>
+    </div>
+</section>
+
+<!-- GAF MASTER ELITE TRUST SECTION -->
+<section class="gaf-section">
+    <div class="gaf-inner">
+        <div class="gaf-logo-wrap">
+            <img src="images/gaf-master-elite.png" alt="GAF Master Elite Contractor">
+        </div>
+        <div class="gaf-content">
+            <h2>GAF Master Elite&reg; Certified</h2>
+            <p class="gaf-sub">Only 3% of roofing contractors in the country earn this designation. It means you get more.</p>
+            <div class="gaf-guarantees">
+                <div class="gaf-item">
+                    <div class="gaf-icon">
+                        <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M14 2l3 8h9l-7 5 3 8-8-6-8 6 3-8-7-5h9z" fill="#003366"/></svg>
+                    </div>
+                    <div>
+                        <strong>Golden Pledge&reg; Warranty</strong>
+                        <p>Up to 50-year coverage on materials AND 25 years on workmanship &mdash; the strongest warranty in roofing.</p>
+                    </div>
+                </div>
+                <div class="gaf-item">
+                    <div class="gaf-icon">
+                        <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M14 3L4 8v7c0 6 4.5 11 10 12 5.5-1 10-6 10-12V8L14 3z" fill="none" stroke="#003366" stroke-width="2.2"/><path d="M9 14l3 3 7-7" stroke="#003366" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                    <div>
+                        <strong>Factory-Certified Installation</strong>
+                        <p>Every install meets GAF&rsquo;s strict standards. Your roof is inspected and backed by the manufacturer directly.</p>
+                    </div>
+                </div>
+                <div class="gaf-item">
+                    <div class="gaf-icon">
+                        <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="11" stroke="#003366" stroke-width="2.2"/><path d="M14 8v6l4 3" stroke="#003366" stroke-width="2.2" stroke-linecap="round"/></svg>
+                    </div>
+                    <div>
+                        <strong>Transferable Coverage</strong>
+                        <p>Warranty transfers to the new owner if you sell. Adds real value to your home at closing.</p>
+                    </div>
+                </div>
+                <div class="gaf-item">
+                    <div class="gaf-icon">
+                        <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M5 14h4l3 7 5-12 3 5h3" stroke="#003366" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                    <div>
+                        <strong>Wind &amp; Algae Coverage</strong>
+                        <p>Protection against wind speeds up to 130 mph and algae discoloration included with qualifying systems.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="form-section" id="contact">
+    <h2>Get Your Free Inspection</h2>
+    <p class="sub">Takes 30 seconds. We will call you within the hour.</p>
+    <form id="leadForm">
+        <input type="text"  name="name"    placeholder="Full Name"        required>
+        <input type="tel"   name="phone"   placeholder="Phone Number"     required>
+        <input type="email" name="email"   placeholder="Email Address"    required>
+        <input type="text"  name="address" placeholder="Property Address" required>
+
+        <div style="position:relative;">
+            <input type="text" name="insurance_company" id="insField" placeholder="Insurance Company" style="padding-right:1rem;">
+        </div>
+        <label style="display:flex;align-items:center;gap:0.5rem;background:rgba(255,255,255,0.15);padding:0.75rem 1rem;border-radius:4px;margin-bottom:0.9rem;cursor:pointer;color:white;font-size:0.9rem;">
+            <input type="checkbox" name="no_policy" id="noPolicy" style="width:auto;margin:0;" onchange="document.getElementById('insField').disabled=this.checked;document.getElementById('insField').placeholder=this.checked?'Not required':'Insurance Company';">
+            I don't know / I will have my policy at the inspection date
+        </label>
+
+        <select name="roof_age" required>
+            <option value="" disabled selected>Approximate Roof Age</option>
+            <option value="under5">Less than 5 years</option>
+            <option value="5-10">5 - 10 years</option>
+            <option value="10-15">10 - 15 years</option>
+            <option value="15-20">15 - 20 years</option>
+            <option value="20plus">20+ years</option>
+            <option value="unknown">Not sure</option>
+        </select>
+
+        <select name="shingle_type" required>
+            <option value="" disabled selected>Type of Shingles</option>
+            <option value="asphalt">Asphalt</option>
+            <option value="metal">Metal</option>
+            <option value="tile">Tile</option>
+            <option value="wood">Wood / Cedar Shake</option>
+            <option value="unknown">I don't know</option>
+        </select>
+
+        <select name="damage_type" required>
+            <option value="" disabled selected>Type of Damage</option>
+            <option value="Roof">Roof Damage</option>
+            <option value="Siding">Siding Damage</option>
+            <option value="Gutters">Gutter Damage</option>
+            <option value="Multiple">Multiple Areas</option>
+            <option value="Other">Other / Not Sure</option>
+        </select>
+
+        <label style="display:flex;align-items:center;gap:0.5rem;background:rgba(255,255,255,0.15);padding:0.75rem 1rem;border-radius:4px;margin-bottom:0.9rem;cursor:pointer;color:white;font-size:0.9rem;">
+            <input type="checkbox" name="sms_optin" style="width:auto;margin:0;" checked>
+            Text me my inspection confirmation
+        </label>
+        <button type="submit">Request Free Inspection &rarr;</button>
+        <p style="color:rgba(255,255,255,0.55);font-size:0.82rem;margin-top:1rem;line-height:1.5;">
+            No obligation. No pressure. Your inspection is completely free &mdash; we only get paid if you choose to work with us.
+        </p>
+    </form>
+</section>
+
+<!-- OFFICE ADDRESS -->
+<section style="background:#002244;padding:2.5rem 2rem;text-align:center;border-top:1px solid rgba(255,255,255,0.08);">
+    <p style="color:rgba(255,255,255,0.5);font-size:0.8rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:0.6rem;">Our Office</p>
+    <p style="color:white;font-size:1.1rem;font-weight:700;">1000 Delsea Dr, Suite I-4</p>
+    <p style="color:rgba(255,255,255,0.7);font-size:1rem;">Westville, NJ 08093</p>
+    <a href="https://maps.google.com/?q=1000+Delsea+Dr+Suite+I-4+Westville+NJ+08093" target="_blank"
+       style="display:inline-block;margin-top:0.8rem;color:rgba(255,255,255,0.5);font-size:0.85rem;text-decoration:underline;">Get Directions &rarr;</a>
+</section>
+
+<!-- CONTACT BUTTONS -->
+<section style="background:#002244;padding:2.5rem 2rem;text-align:center;">
+    <p style="color:rgba(255,255,255,0.6);font-size:0.9rem;margin-bottom:1.2rem;letter-spacing:1px;text-transform:uppercase;">Prefer to reach us directly?</p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+        <a href="tel:+18562548367" style="display:inline-flex;align-items:center;gap:0.6rem;background:#003366;color:white;text-decoration:none;padding:0.9rem 2rem;border-radius:4px;font-weight:700;font-size:1rem;border:2px solid rgba(255,255,255,0.2);transition:background 0.15s;">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 1h4l2 5-2.5 1.5a11 11 0 005 5L13 10l5 2v4a2 2 0 01-2 2A16 16 0 011 3a2 2 0 012-2z" fill="white"/></svg>
+            Call Us
+        </a>
+        <a href="mailto:berkakin.unitedgroup@gmail.com" style="display:inline-flex;align-items:center;gap:0.6rem;background:transparent;color:white;text-decoration:none;padding:0.9rem 2rem;border-radius:4px;font-weight:700;font-size:1rem;border:2px solid rgba(255,255,255,0.4);transition:background 0.15s;">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1" y="3" width="16" height="12" rx="2" stroke="white" stroke-width="1.8"/><path d="M1 5l8 6 8-6" stroke="white" stroke-width="1.8"/></svg>
+            Send Email
+        </a>
+    </div>
+</section>
+
+<footer>
+    <div style="margin-bottom:0.6rem;">
+        <a href="tel:+18562548367" style="color:rgba(255,255,255,0.7);text-decoration:none;margin-right:1.5rem;">+1 (856) 254-8367</a>
+        <a href="mailto:berkakin.unitedgroup@gmail.com" style="color:rgba(255,255,255,0.7);text-decoration:none;">berkakin.unitedgroup@gmail.com</a>
+    </div>
+    &copy; 2026 United Group Restorations. All rights reserved.
+</footer>
+
+<script>
+(function () {
+    var wrap = document.getElementById('heroWrap');
+    var l1   = document.getElementById('l1');
+    var l2   = document.getElementById('l2');
+    var l3   = document.getElementById('l3');
+
+    function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+    function norm(v, a, b)  { return clamp((v - a) / (b - a), 0, 1); }
+    function ease(t)        { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
+
+    var pending = false;
+
+    function render() {
+        pending = false;
+        var scrolled   = window.scrollY - wrap.offsetTop;
+        var scrollable = wrap.offsetHeight - window.innerHeight;
+        var p = clamp(scrolled / scrollable, 0, 1);
+        var vh = window.innerHeight;
+
+        // Sky: rises up and fades out (first drop)
+        // Ken Burns zoom on each layer while visible
+        // Drone descent with twist — slight rotateX tilt during transitions
+        var travel = 0.38 * vh;
+
+        // Transition zones: when are we mid-transition?
+        var trans1 = ease(norm(p, 0.24, 0.52)); // sky->hood transition 0->1
+        var trans2 = ease(norm(p, 0.54, 0.82)); // hood->house transition 0->1
+        // Twist peaks at midpoint of each transition (bell curve)
+        var twist1 = Math.sin(trans1 * Math.PI) * 6;  // max 6deg tilt during transition 1
+        var twist2 = Math.sin(trans2 * Math.PI) * 6;  // max 6deg tilt during transition 2
+        var activeTwist = twist1 + twist2;
+
+        // SKY: drifts up slowly, long crossfade overlap, slight blur on exit
+        var skyMove  = norm(p, 0.0, 1.0);
+        var skyFade  = ease(norm(p, 0.15, 0.65));          // very long fade
+        var skyTwist = ease(norm(p, 0.15, 0.60)) * 7;
+        var skyBlur  = (skyFade * 3).toFixed(1);           // subtle blur as it exits
+        l1.style.transformOrigin = 'center bottom';
+        l1.style.transform = 'perspective(1200px) translateY(' + (-skyMove * travel * 0.5) + 'px) rotateX(' + skyTwist + 'deg)';
+        l1.style.opacity = (1 - skyFade).toFixed(3);
+        l1.style.filter  = 'blur(' + skyBlur + 'px)';
+
+        // NEIGHBORHOOD: long gentle enter, full hold, long gentle exit with blur
+        var hoodEnter    = ease(norm(p, 0.12, 0.42));      // starts very early
+        var hoodExit     = ease(norm(p, 0.58, 0.88));      // ends very late
+        var hoodDrift    = norm(p, 0.12, 0.90);
+        var hoodTwistIn  = (1 - hoodEnter) * -5;
+        var hoodTwistOut = hoodExit * 7;
+        var hoodBlur     = (hoodExit * 3).toFixed(1);
+        l2.style.transformOrigin = 'center center';
+        l2.style.transform = 'perspective(1200px) translateY(' + (
+            (1 - hoodEnter) * travel * 0.45
+            - hoodDrift * travel * 0.25
+        ) + 'px) rotateX(' + (hoodTwistIn + hoodTwistOut) + 'deg)';
+        l2.style.opacity = (hoodEnter * (1 - hoodExit)).toFixed(3);
+        l2.style.filter  = 'blur(' + hoodBlur + 'px)';
+
+        // HOUSE: enters early, rises smoothly, blur clears as it settles
+        var houseEnter = ease(norm(p, 0.48, 0.90));
+        var houseDrift = norm(p, 0.48, 1.0) * travel * 0.12;
+        var houseTwist = (1 - houseEnter) * -5;
+        var houseBlur  = ((1 - houseEnter) * 4).toFixed(1); // starts blurry, sharpens
+        l3.style.transformOrigin = 'center center';
+        l3.style.transform = 'perspective(1200px) translateY(' + (
+            (1 - houseEnter) * travel * 0.45 - houseDrift
+        ) + 'px) rotateX(' + houseTwist + 'deg)';
+        l3.style.opacity = houseEnter.toFixed(3);
+        l3.style.filter  = 'blur(' + houseBlur + 'px)';
+
+        // Messages: fade + slide-up via .visible class
+        var m1 = document.getElementById('msg1');
+        var m2 = document.getElementById('msg2');
+        var m3 = document.getElementById('msg3');
+        var op1 = 1 - ease(norm(p, 0.20, 0.40));
+        var op2 = ease(norm(p, 0.30, 0.50)) * (1 - ease(norm(p, 0.62, 0.76)));
+        var op3 = ease(norm(p, 0.66, 0.86));
+        m1.style.opacity = op1.toFixed(3);
+        m1.style.transform = 'translateY(' + ((1 - op1) * 24) + 'px)';
+        m2.style.opacity = op2.toFixed(3);
+        m2.style.transform = 'translateY(' + ((1 - Math.min(ease(norm(p,0.28,0.48)),1)) * 24) + 'px)';
+        m3.style.opacity = op3.toFixed(3);
+        m3.style.transform = 'translateY(' + ((1 - op3) * 24) + 'px)';
+        m3.style.pointerEvents = p > 0.70 ? 'all' : 'none';
+
+        // Progress dots
+        var stage = p < 0.33 ? 1 : p < 0.66 ? 2 : 3;
+        for (var i = 1; i <= 3; i++) {
+            document.getElementById('dot' + i).className = 'dot' + (i === stage ? ' active' : '');
+        }
+
+        // Hide scroll hint after first stage
+        var hint = document.getElementById('scrollHint');
+        if (hint) hint.style.opacity = (1 - ease(norm(p, 0.1, 0.25))).toFixed(3);
+    }
+
+    window.addEventListener('scroll', function () {
+        if (!pending) { pending = true; requestAnimationFrame(render); }
+    }, { passive: true });
+
+    render();
+}());
+
+document.getElementById('leadForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var form = this;
+    var btn = form.querySelector('button[type=submit]');
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+
+    var data = Object.fromEntries(new FormData(form));
+    // Map new fields to API schema
+    var payload = {
+        name:                data.name,
+        email:               data.email,
+        phone:               data.phone,
+        address:             data.address,
+        service_type:        data.damage_type || 'other',
+        contact_method:      data.sms_optin ? 'sms' : 'email',
+        damage_description:  [
+            data.insurance_company ? 'Insurance: ' + data.insurance_company : '',
+            data.no_policy === 'on' ? 'Policy at inspection' : '',
+            data.roof_age ? 'Roof age: ' + data.roof_age : '',
+            data.shingle_type ? 'Shingles: ' + data.shingle_type : ''
+        ].filter(Boolean).join(' | ')
+    };
+
+    fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(res) {
+        if (res.success) {
+            form.innerHTML = '<p style="color:#fff;font-size:1.2rem;padding:2rem 0;line-height:1.6">Got it! We will call you within the hour.<br><span style="font-size:0.9rem;opacity:0.7">Reference: ' + res.leadId.substring(0,8).toUpperCase() + '</span></p>';
+            popupShown = true; sessionStorage.setItem('popupShown','1'); // don't show exit popup after submit
+        } else {
+            btn.disabled = false;
+            btn.textContent = 'Request Free Inspection \u2192';
+            alert('Something went wrong. Please call us directly at (856) 254-8367');
+        }
+    })
+    .catch(function() {
+        btn.disabled = false;
+        btn.textContent = 'Request Free Inspection \u2192';
+        alert('Connection error. Please call us at (856) 254-8367');
+    });
+});
+
+// Exit form also posts as lead
+document.getElementById('exitForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var data = Object.fromEntries(new FormData(this));
+    fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            name: 'Exit Form Lead',
+            email: 'unknown@unknown.com',
+            phone: data.exit_phone,
+            address: data.exit_address,
+            service_type: 'other',
+            damage_description: 'Via exit intent popup'
+        })
+    }).finally(function() {
+        closePopup();
+        document.getElementById('contact').scrollIntoView({behavior:'smooth'});
+    });
+});
+
+// Exit intent popup — desktop: mouse leaves top of page only
+var popupShown = sessionStorage.getItem('popupShown');
+var isMobile = /Mobi|Android/i.test(navigator.userAgent);
+
+if (!isMobile) {
+    document.addEventListener('mouseleave', function(e) {
+        if (e.clientY < 10 && !popupShown) {
+            popupShown = true;
+            sessionStorage.setItem('popupShown', '1');
+            document.getElementById('exitPopup').classList.add('show');
+        }
+    });
+}
+// Mobile only: show after 60s if user hasn't submitted the main form
+if (isMobile && !popupShown) {
+    setTimeout(function() {
+        if (!popupShown) {
+            popupShown = true;
+            sessionStorage.setItem('popupShown', '1');
+            document.getElementById('exitPopup').classList.add('show');
+        }
+    }, 60000);
+}
+function closePopup() {
+    document.getElementById('exitPopup').classList.remove('show');
+}
+document.getElementById('exitForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    closePopup();
+    document.getElementById('contact').scrollIntoView({behavior:'smooth'});
+});
+</script>
+
+<!-- STICKY CALL BUTTON -->
+<a href="tel:+18562548367" id="stickyCall">
+    <svg width="20" height="20" viewBox="0 0 18 18" fill="none"><path d="M3 1h4l2 5-2.5 1.5a11 11 0 005 5L13 10l5 2v4a2 2 0 01-2 2A16 16 0 011 3a2 2 0 012-2z" fill="white"/></svg>
+    Call Now
+</a>
+
+<!-- EXIT INTENT POPUP -->
+<div id="exitPopup">
+    <div class="popup-box">
+        <button class="popup-close" onclick="closePopup()">&times;</button>
+        <h3>Wait &mdash; Before You Go</h3>
+        <p>Get a free damage report for your address. Takes 30 seconds.</p>
+        <form id="exitForm">
+            <input type="tel" name="exit_phone" placeholder="Your Phone Number" required>
+            <input type="text" name="exit_address" placeholder="Property Address" required>
+            <button type="submit">Get My Free Report &rarr;</button>
+        </form>
+        <p class="popup-note">No obligation. No spam. We will call once.</p>
+    </div>
+</div>
+</body>
+</html>

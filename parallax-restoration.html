@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>United Group Restoration - Parallax Scrolling</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Smooth scroll behavior */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Hero Section with Parallax Background */
+        .hero {
+            position: relative;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 120%;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            z-index: -1;
+            will-change: transform;
+        }
+
+        .parallax-bg {
+            position: absolute;
+            width: 200%;
+            height: 150%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255, 107, 53, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 195, 0, 0.1) 0%, transparent 50%);
+            will-change: transform;
+            z-index: 0;
+        }
+
+        .parallax-layer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            will-change: transform;
+        }
+
+        .parallax-layer svg {
+            width: 100%;
+            height: 100%;
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            transform: translateZ(0);
+        }
+
+        .hero-content h1 {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            margin-bottom: 1rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff6b35 0%, #ffc300 50%, #ff6b35 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 6s ease infinite;
+            letter-spacing: -0.02em;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .hero-content p {
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            margin-bottom: 2rem;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 600px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, #ff6b35, #ffc300);
+            color: #000;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .cta-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 107, 53, 0.5);
+        }
+
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+        }
+
+        .mouse {
+            width: 26px;
+            height: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 13px;
+            position: relative;
+            margin: 0 auto;
+            margin-bottom: 10px;
+        }
+
+        .mouse::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 2px;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: scroll 1.5s infinite;
+        }
+
+        @keyframes scroll {
+            0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(12px); }
+        }
+
+        /* Section styling */
+        section {
+            padding: 8rem 5vw;
+            position: relative;
+            overflow: hidden;
+        }
+
+        section:nth-child(odd) {
+            background: #0f0f0f;
+        }
+
+        section:nth-child(even) {
+            background: #1a1a1a;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 6vw, 4rem);
+            margin-bottom: 3rem;
+            font-weight: 700;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b35, #ffc300);
+            width: 100%;
+            border-radius: 2px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .card {
+            background: rgba(255, 107, 53, 0.05);
+            border: 1px solid rgba(255, 107, 53, 0.2);
+            padding: 2rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 107, 53, 0.3) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(255, 107, 53, 0.5);
+            background: rgba(255, 107, 53, 0.08);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #ff6b35;
+        }
+
+        .card p {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+        }
+
+        /* Parallax text effect */
+        .parallax-text {
+            font-size: clamp(1.5rem, 4vw, 3rem);
+            font-weight: 700;
+            line-height: 1.2;
+            max-width: 800px;
+            position: relative;
+            z-index: 5;
+            will-change: transform;
+        }
+
+        /* Image parallax */
+        .parallax-image {
+            position: relative;
+            height: 400px;
+            overflow: hidden;
+            border-radius: 10px;
+            margin: 3rem 0;
+        }
+
+        .parallax-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            will-change: transform;
+        }
+
+        /* Footer */
+        footer {
+            background: #000;
+            padding: 2rem 5vw;
+            text-align: center;
+            border-top: 1px solid rgba(255, 107, 53, 0.3);
+        }
+
+        footer p {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Fade in animation */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+            will-change: opacity, transform;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            section {
+                padding: 4rem 3vw;
+            }
+
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+
+            .hero-content p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="parallax-bg">
+            <div class="parallax-layer" id="layer1">
+                <svg viewBox="0 0 1200 600" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:rgb(255,107,53);stop-opacity:0.3" />
+                            <stop offset="100%" style="stop-color:rgb(255,195,0);stop-opacity:0.1" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M0,100 Q300,50 600,100 T1200,100 L1200,0 L0,0 Z" fill="url(#grad1)" />
+                    <circle cx="200" cy="150" r="80" fill="rgba(255,107,53,0.1)" />
+                    <circle cx="1000" cy="200" r="120" fill="rgba(255,195,0,0.08)" />
+                </svg>
+            </div>
+            <div class="parallax-layer" id="layer2">
+                <svg viewBox="0 0 1200 600" preserveAspectRatio="none">
+                    <path d="M0,300 Q300,250 600,300 T1200,300 L1200,600 L0,600 Z" fill="rgba(255,107,53,0.05)" />
+                </svg>
+            </div>
+        </div>
+
+        <div class="hero-content">
+            <h1>United Group Restoration</h1>
+            <p>Professional Storm & Water Damage Recovery</p>
+            <button class="cta-button">Get Free Assessment</button>
+        </div>
+
+        <div class="scroll-indicator">
+            <div class="mouse"></div>
+            <p style="font-size: 0.9rem; color: rgba(255,255,255,0.6);">Scroll to explore</p>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section>
+        <h2 class="section-title fade-in">Our Services</h2>
+        <div class="content-grid">
+            <div class="card fade-in">
+                <h3>Water Damage</h3>
+                <p>24/7 emergency response for flooding, burst pipes, and water intrusion. Professional extraction and drying services.</p>
+            </div>
+            <div class="card fade-in">
+                <h3>Storm Recovery</h3>
+                <p>Complete restoration after severe weather. Roof repairs, structural assessment, and insurance claim support.</p>
+            </div>
+            <div class="card fade-in">
+                <h3>Mold Remediation</h3>
+                <p>Expert mold detection and safe removal. Full remediation with prevention strategies for your home.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Parallax Text Section -->
+    <section style="padding: 10rem 5vw; display: flex; align-items: center; min-height: 100vh;">
+        <div class="parallax-text fade-in" id="parallax-text-1">
+            We've restored <span style="color: #ff6b35;">10,000+</span> homes after disaster strikes. Your recovery is our mission.
+        </div>
+    </section>
+
+    <!-- Why Choose Us -->
+    <section>
+        <h2 class="section-title fade-in">Why Choose United Group</h2>
+        <div class="content-grid">
+            <div class="card fade-in">
+                <h3>Licensed & Certified</h3>
+                <p>Full credentials in water damage restoration, mold remediation, and structural repair.</p>
+            </div>
+            <div class="card fade-in">
+                <h3>Insurance Partners</h3>
+                <p>Direct insurance billing. We handle the paperwork so you can focus on recovery.</p>
+            </div>
+            <div class="card fade-in">
+                <h3>24/7 Emergency Response</h3>
+                <p>We're here when you need us most. Same-day response in emergencies.</p>
+            </div>
+            <div class="card fade-in">
+                <h3>Advanced Equipment</h3>
+                <p>State-of-the-art drying, detection, and remediation technology.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Parallax Text Section 2 -->
+    <section style="padding: 10rem 5vw; display: flex; align-items: center; min-height: 100vh; background: linear-gradient(135deg, rgba(255,107,53,0.1) 0%, rgba(255,195,0,0.05) 100%);">
+        <div class="parallax-text fade-in" id="parallax-text-2">
+            Fast, professional, <span style="color: #ffc300;">trustworthy</span> restoration you can count on.
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section style="text-align: center; padding: 8rem 5vw;">
+        <h2 class="section-title fade-in" style="display: block; margin: 0 auto 2rem;">Ready to Restore?</h2>
+        <p style="font-size: 1.2rem; margin-bottom: 2rem; color: rgba(255,255,255,0.8); max-width: 600px; margin-left: auto; margin-right: auto;">
+            Contact us for a free assessment. We're available 24/7 for emergencies.
+        </p>
+        <button class="cta-button" style="font-size: 1.2rem; padding: 1.2rem 3rem;">Call 1-800-RESTORE</button>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 United Group Restoration. All rights reserved.</p>
+        <p>Available 24/7 for emergency response | Licensed & Insured</p>
+    </footer>
+
+    <script>
+        // Parallax scroll effect
+        let ticking = false;
+        let lastScrollY = 0;
+
+        function updateParallax() {
+            const scrollY = window.scrollY;
+            
+            // Hero parallax background
+            const parallaxBg = document.querySelector('.parallax-bg');
+            if (parallaxBg) {
+                parallaxBg.style.transform = `translateY(${scrollY * 0.5}px)`;
+            }
+
+            // Layer parallax
+            const layer1 = document.getElementById('layer1');
+            const layer2 = document.getElementById('layer2');
+            if (layer1) layer1.style.transform = `translateY(${scrollY * 0.3}px)`;
+            if (layer2) layer2.style.transform = `translateY(${scrollY * 0.7}px)`;
+
+            // Text parallax
+            const text1 = document.getElementById('parallax-text-1');
+            const text2 = document.getElementById('parallax-text-2');
+            if (text1) text1.style.transform = `translateY(${scrollY * 0.2}px)`;
+            if (text2) text2.style.transform = `translateY(${(scrollY - text2.offsetTop) * 0.2}px)`;
+
+            ticking = false;
+        }
+
+        window.addEventListener('scroll', () => {
+            lastScrollY = window.scrollY;
+            if (!ticking) {
+                window.requestAnimationFrame(updateParallax);
+                ticking = true;
+            }
+        });
+
+        // Fade in on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Smooth scroll for buttons
+        document.querySelectorAll('.cta-button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const target = document.querySelector('footer');
+                target.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // Initial parallax update
+        updateParallax();
+    </script>
+
+</body>
+</html>

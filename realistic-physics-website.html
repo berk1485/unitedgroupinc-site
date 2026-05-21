@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>United Group Restoration — Realistic Physics</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* REALISTIC PHYSICS ANIMATIONS */
+        
+        /* 1. GRAVITY FALL (objects falling naturally) */
+        @keyframes gravityFall {
+            0% { transform: translateY(-100px); opacity: 0; }
+            2% { transform: translateY(-97px); opacity: 0.2; }
+            4% { transform: translateY(-89px); opacity: 0.4; }
+            6% { transform: translateY(-74px); opacity: 0.6; }
+            8% { transform: translateY(-54px); opacity: 0.8; }
+            10% { transform: translateY(-28px); opacity: 1; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        /* 2. ELASTIC SPRING (bouncy but real) */
+        @keyframes elasticSpring {
+            0% { transform: scale(0.8); opacity: 0; }
+            25% { transform: scale(1.22); }
+            50% { transform: scale(0.80); }
+            75% { transform: scale(1.02); }
+            100% { transform: scale(1.0); opacity: 1; }
+        }
+
+        /* 3. MOMENTUM FRICTION (sliding to stop) */
+        @keyframes momentumFriction {
+            0% { transform: translateX(200px); opacity: 0; }
+            10% { transform: translateX(114px); opacity: 0.5; }
+            20% { transform: translateX(50px); opacity: 0.7; }
+            30% { transform: translateX(14px); opacity: 0.85; }
+            50% { transform: translateX(-6px); opacity: 0.95; }
+            100% { transform: translateX(-8px); opacity: 1; }
+        }
+
+        /* 4. PENDULUM SWING (natural oscillation) */
+        @keyframes pendulumSwing {
+            0% { transform: rotateZ(0deg); }
+            25% { transform: rotateZ(45deg); }
+            50% { transform: rotateZ(-30deg); }
+            75% { transform: rotateZ(15deg); }
+            100% { transform: rotateZ(0deg); }
+        }
+
+        /* 5. BOUNCE (ball bouncing) */
+        @keyframes bounceBall {
+            0% { transform: translateY(0); }
+            15% { transform: translateY(100px); }
+            30% { transform: translateY(0); }
+            45% { transform: translateY(60px); }
+            60% { transform: translateY(0); }
+            75% { transform: translateY(30px); }
+            100% { transform: translateY(0); }
+        }
+
+        /* 6. AIR RESISTANCE (natural falling with drag) */
+        @keyframes airResistance {
+            0% { transform: translateY(0); opacity: 0; }
+            10% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(100vh); opacity: 0; }
+        }
+
+        /* HERO SECTION */
+        .hero {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            overflow: hidden;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 800px;
+            padding: 0 20px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            animation: gravityFall 1.2s ease-out;
+            background: linear-gradient(135deg, #ff6b35 0%, #ffc300 50%, #ff6b35 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gravityFall 1.2s ease-out, gradientShift 6s ease infinite;
+            letter-spacing: -0.02em;
+        }
+
+        .hero p {
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            margin-bottom: 2rem;
+            color: rgba(255, 255, 255, 0.8);
+            animation: gravityFall 1.4s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, #ff6b35, #ffc300);
+            color: #000;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border: none;
+            cursor: pointer;
+            animation: elasticSpring 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .cta-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 107, 53, 0.5);
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* FLOATING ELEMENTS (gravity + bounce) */
+        .floating-element {
+            position: absolute;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .float-1 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255, 107, 53, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            top: 10%;
+            left: 15%;
+            animation: bounceBall 4s ease-in-out infinite;
+            filter: blur(40px);
+        }
+
+        .float-2 {
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(255, 195, 0, 0.2) 0%, transparent 70%);
+            border-radius: 50%;
+            bottom: 15%;
+            right: 10%;
+            animation: bounceBall 5s ease-in-out infinite reverse;
+            filter: blur(50px);
+        }
+
+        /* CONTENT SECTIONS */
+        section {
+            padding: 8rem 5vw;
+            position: relative;
+            overflow: hidden;
+            min-height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        section:nth-child(odd) {
+            background: #0f0f0f;
+        }
+
+        section:nth-child(even) {
+            background: #1a1a1a;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 6vw, 4rem);
+            margin-bottom: 3rem;
+            font-weight: 700;
+            position: relative;
+            display: inline-block;
+            animation: gravityFall 0.8s ease-out;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b35, #ffc300);
+            width: 100%;
+            border-radius: 2px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .card {
+            background: rgba(255, 107, 53, 0.05);
+            border: 1px solid rgba(255, 107, 53, 0.2);
+            padding: 2rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: momentumFriction 0.8s ease-out;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 107, 53, 0.3) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(255, 107, 53, 0.5);
+            background: rgba(255, 107, 53, 0.08);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #ff6b35;
+        }
+
+        .card p {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+        }
+
+        /* STAGGERED ANIMATION */
+        .card:nth-child(1) { animation-delay: 0s; }
+        .card:nth-child(2) { animation-delay: 0.1s; }
+        .card:nth-child(3) { animation-delay: 0.2s; }
+        .card:nth-child(4) { animation-delay: 0.3s; }
+
+        footer {
+            background: #000;
+            padding: 2rem 5vw;
+            text-align: center;
+            border-top: 1px solid rgba(255, 107, 53, 0.3);
+        }
+
+        footer p {
+            color: rgba(255, 255, 255, 0.6);
+        }
+    </style>
+</head>
+<body>
+
+<!-- HERO WITH REALISTIC PHYSICS -->
+<section class="hero">
+    <!-- Floating elements with gravity and bounce -->
+    <div class="floating-element float-1"></div>
+    <div class="floating-element float-2"></div>
+
+    <div class="hero-content">
+        <h1>United Group Restoration</h1>
+        <p>Professional Storm & Water Damage Recovery</p>
+        <button class="cta-button">Get Free Assessment</button>
+    </div>
+</section>
+
+<!-- SERVICES SECTION -->
+<section>
+    <h2 class="section-title">Our Services</h2>
+    <div class="content-grid">
+        <div class="card">
+            <h3>Water Damage</h3>
+            <p>24/7 emergency response for flooding, burst pipes, and water intrusion. Professional extraction and drying services.</p>
+        </div>
+        <div class="card">
+            <h3>Storm Recovery</h3>
+            <p>Complete restoration after severe weather. Roof repairs, structural assessment, and insurance claim support.</p>
+        </div>
+        <div class="card">
+            <h3>Mold Remediation</h3>
+            <p>Expert mold detection and safe removal. Full remediation with prevention strategies for your home.</p>
+        </div>
+    </div>
+</section>
+
+<!-- WHY CHOOSE US -->
+<section>
+    <h2 class="section-title">Why Choose United Group</h2>
+    <div class="content-grid">
+        <div class="card">
+            <h3>Licensed & Certified</h3>
+            <p>Full credentials in water damage restoration, mold remediation, and structural repair.</p>
+        </div>
+        <div class="card">
+            <h3>Insurance Partners</h3>
+            <p>Direct insurance billing. We handle the paperwork so you can focus on recovery.</p>
+        </div>
+        <div class="card">
+            <h3>24/7 Emergency Response</h3>
+            <p>We're here when you need us most. Same-day response in emergencies.</p>
+        </div>
+        <div class="card">
+            <h3>Advanced Equipment</h3>
+            <p>State-of-the-art drying, detection, and remediation technology.</p>
+        </div>
+    </div>
+</section>
+
+<!-- CALL TO ACTION -->
+<section style="text-align: center;">
+    <h2 class="section-title" style="display: block; margin: 0 auto 2rem;">Ready to Restore?</h2>
+    <p style="font-size: 1.2rem; margin-bottom: 2rem; color: rgba(255,255,255,0.8); max-width: 600px; margin-left: auto; margin-right: auto;">
+        Contact us for a free assessment. We're available 24/7 for emergencies.
+    </p>
+    <button class="cta-button" style="font-size: 1.2rem; padding: 1.2rem 3rem;">Call 1-800-RESTORE</button>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <p>&copy; 2026 United Group Restoration. All rights reserved.</p>
+    <p>Available 24/7 for emergency response | Licensed & Insured</p>
+</footer>
+
+</body>
+</html>

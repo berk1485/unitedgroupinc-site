@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>United Group Restoration — Parallax Animation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* PARALLAX LAYERS (Like your reference video) */
+        .parallax-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Layer 1: Background (Slowest) */
+        .parallax-layer-bg {
+            position: absolute;
+            width: 120%;
+            height: 120%;
+            top: -10%;
+            left: -10%;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            z-index: 1;
+            will-change: transform;
+        }
+
+        /* Layer 2: Mid-ground elements */
+        .parallax-layer-mid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            opacity: 0.6;
+            will-change: transform;
+        }
+
+        .parallax-layer-mid::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255, 107, 53, 0.2) 0%, transparent 70%);
+            border-radius: 50%;
+            top: 20%;
+            left: 15%;
+            filter: blur(40px);
+        }
+
+        .parallax-layer-mid::after {
+            content: '';
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(255, 195, 0, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            bottom: 15%;
+            right: 10%;
+            filter: blur(50px);
+        }
+
+        /* Layer 3: Foreground (Fastest) */
+        .parallax-layer-fg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            will-change: transform;
+        }
+
+        .parallax-layer-fg svg {
+            width: 100%;
+            height: 100%;
+            opacity: 0.5;
+        }
+
+        /* HERO CONTENT */
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 800px;
+            padding: 0 20px;
+        }
+
+        .hero-content h1 {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ff6b35 0%, #ffc300 50%, #ff6b35 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 6s ease infinite;
+            letter-spacing: -0.02em;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .hero-content p {
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            margin-bottom: 2rem;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, #ff6b35, #ffc300);
+            color: #000;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .cta-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 107, 53, 0.5);
+        }
+
+        /* SCROLL INDICATOR */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            text-align: center;
+        }
+
+        .mouse {
+            width: 26px;
+            height: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 13px;
+            position: relative;
+            margin: 0 auto 10px;
+        }
+
+        .mouse::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 2px;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: scroll 1.5s infinite;
+        }
+
+        @keyframes scroll {
+            0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(12px); }
+        }
+
+        /* CONTENT SECTIONS */
+        section {
+            padding: 8rem 5vw;
+            position: relative;
+            overflow: hidden;
+            min-height: 50vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        section:nth-child(odd) {
+            background: #0f0f0f;
+        }
+
+        section:nth-child(even) {
+            background: #1a1a1a;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 6vw, 4rem);
+            margin-bottom: 3rem;
+            font-weight: 700;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b35, #ffc300);
+            width: 100%;
+            border-radius: 2px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .card {
+            background: rgba(255, 107, 53, 0.05);
+            border: 1px solid rgba(255, 107, 53, 0.2);
+            padding: 2rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 107, 53, 0.3) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(255, 107, 53, 0.5);
+            background: rgba(255, 107, 53, 0.08);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #ff6b35;
+        }
+
+        .card p {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+        }
+
+        /* FADE IN ON SCROLL */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+            will-change: opacity, transform;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        footer {
+            background: #000;
+            padding: 2rem 5vw;
+            text-align: center;
+            border-top: 1px solid rgba(255, 107, 53, 0.3);
+        }
+
+        footer p {
+            color: rgba(255, 255, 255, 0.6);
+        }
+    </style>
+</head>
+<body>
+
+<!-- HERO WITH PARALLAX LAYERS (Like your reference video) -->
+<section class="parallax-container">
+    <!-- Layer 1: Background -->
+    <div class="parallax-layer-bg"></div>
+    
+    <!-- Layer 2: Mid-ground -->
+    <div class="parallax-layer-mid"></div>
+    
+    <!-- Layer 3: Foreground -->
+    <div class="parallax-layer-fg">
+        <svg viewBox="0 0 1200 800" preserveAspectRatio="none">
+            <defs>
+                <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:rgb(255,107,53);stop-opacity:0.3" />
+                    <stop offset="100%" style="stop-color:rgb(255,195,0);stop-opacity:0.1" />
+                </linearGradient>
+            </defs>
+            <path d="M0,100 Q300,50 600,100 T1200,100 L1200,0 L0,0 Z" fill="url(#grad1)" />
+            <circle cx="200" cy="150" r="80" fill="rgba(255,107,53,0.1)" />
+            <circle cx="1000" cy="200" r="120" fill="rgba(255,195,0,0.08)" />
+        </svg>
+    </div>
+
+    <!-- HERO CONTENT (Stays on top of all layers) -->
+    <div class="hero-content">
+        <h1>United Group Restoration</h1>
+        <p>Professional Storm & Water Damage Recovery</p>
+        <button class="cta-button">Get Free Assessment</button>
+    </div>
+
+    <!-- SCROLL INDICATOR -->
+    <div class="scroll-indicator">
+        <div class="mouse"></div>
+        <p style="font-size: 0.9rem; color: rgba(255,255,255,0.6);">Scroll to explore</p>
+    </div>
+</section>
+
+<!-- SERVICES SECTION -->
+<section>
+    <h2 class="section-title fade-in">Our Services</h2>
+    <div class="content-grid">
+        <div class="card fade-in">
+            <h3>Water Damage</h3>
+            <p>24/7 emergency response for flooding, burst pipes, and water intrusion. Professional extraction and drying services.</p>
+        </div>
+        <div class="card fade-in">
+            <h3>Storm Recovery</h3>
+            <p>Complete restoration after severe weather. Roof repairs, structural assessment, and insurance claim support.</p>
+        </div>
+        <div class="card fade-in">
+            <h3>Mold Remediation</h3>
+            <p>Expert mold detection and safe removal. Full remediation with prevention strategies for your home.</p>
+        </div>
+    </div>
+</section>
+
+<!-- WHY CHOOSE US -->
+<section>
+    <h2 class="section-title fade-in">Why Choose United Group</h2>
+    <div class="content-grid">
+        <div class="card fade-in">
+            <h3>Licensed & Certified</h3>
+            <p>Full credentials in water damage restoration, mold remediation, and structural repair.</p>
+        </div>
+        <div class="card fade-in">
+            <h3>Insurance Partners</h3>
+            <p>Direct insurance billing. We handle the paperwork so you can focus on recovery.</p>
+        </div>
+        <div class="card fade-in">
+            <h3>24/7 Emergency Response</h3>
+            <p>We're here when you need us most. Same-day response in emergencies.</p>
+        </div>
+        <div class="card fade-in">
+            <h3>Advanced Equipment</h3>
+            <p>State-of-the-art drying, detection, and remediation technology.</p>
+        </div>
+    </div>
+</section>
+
+<!-- CALL TO ACTION -->
+<section style="text-align: center;">
+    <h2 class="section-title fade-in" style="display: block; margin: 0 auto 2rem;">Ready to Restore?</h2>
+    <p style="font-size: 1.2rem; margin-bottom: 2rem; color: rgba(255,255,255,0.8); max-width: 600px; margin-left: auto; margin-right: auto;">
+        Contact us for a free assessment. We're available 24/7 for emergencies.
+    </p>
+    <button class="cta-button" style="font-size: 1.2rem; padding: 1.2rem 3rem;">Call 1-800-RESTORE</button>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <p>&copy; 2026 United Group Restoration. All rights reserved.</p>
+    <p>Available 24/7 for emergency response | Licensed & Insured</p>
+</footer>
+
+<script>
+    // PARALLAX SCROLL EFFECT (Like your reference video)
+    let ticking = false;
+    let lastScrollY = 0;
+
+    function updateParallax() {
+        const scrollY = window.scrollY;
+        
+        // Layer 1: Background (Slowest - 0.3x speed)
+        const bg = document.querySelector('.parallax-layer-bg');
+        if (bg) {
+            bg.style.transform = `translateY(${scrollY * 0.3}px)`;
+        }
+
+        // Layer 2: Mid-ground (Medium - 0.6x speed)
+        const mid = document.querySelector('.parallax-layer-mid');
+        if (mid) {
+            mid.style.transform = `translateY(${scrollY * 0.6}px)`;
+        }
+
+        // Layer 3: Foreground (Faster - 1.0x speed)
+        const fg = document.querySelector('.parallax-layer-fg');
+        if (fg) {
+            fg.style.transform = `translateY(${scrollY * 1.0}px)`;
+        }
+
+        ticking = false;
+    }
+
+    window.addEventListener('scroll', () => {
+        lastScrollY = window.scrollY;
+        if (!ticking) {
+            window.requestAnimationFrame(updateParallax);
+            ticking = true;
+        }
+    });
+
+    // FADE IN ON SCROLL
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.fade-in').forEach(el => {
+        observer.observe(el);
+    });
+
+    // INITIAL PARALLAX
+    updateParallax();
+</script>
+
+</body>
+</html>
