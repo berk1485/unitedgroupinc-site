@@ -487,7 +487,10 @@ footer {
         <input type="text"  name="name"    placeholder="Full Name"        required>
         <input type="tel"   name="phone"   placeholder="Phone Number"     required>
         <input type="email" name="email"   placeholder="Email Address"    required>
+        <div style="position:relative;">
         <input type="text" id="addressInput" name="address" placeholder="Property Address" autocomplete="off" required>
+        <ul id="addressSuggestions" style="display:none;position:absolute;z-index:9999;background:#fff;color:#222;border:1px solid #ccc;border-radius:6px;list-style:none;margin:0;padding:0;width:100%;max-height:200px;overflow-y:auto;font-size:0.9rem;"></ul>
+        </div>
 
         <div style="position:relative;">
             <input type="text" name="insurance_company" id="insField" placeholder="Insurance Company" style="padding-right:1rem;">
@@ -749,11 +752,55 @@ document.getElementById('exitForm').addEventListener('submit', function(e) {
         <form id="exitForm">
             <input type="tel" name="exit_phone" placeholder="Your Phone Number" required>
             <input type="text" id="exitAddressInput" name="exit_address" placeholder="Property Address" autocomplete="off" required>
+            <ul id="exitAddressSuggestions" style="display:none;position:absolute;z-index:9999;background:#fff;color:#222;border:1px solid #ccc;border-radius:6px;list-style:none;margin:0;padding:0;width:100%;max-height:200px;overflow-y:auto;font-size:0.9rem;"></ul>
             <button type="submit">Get My Free Report &rarr;</button>
         </form>
         <p class="popup-note">No obligation. No spam. We will call once.</p>
     </div>
 </div>
+<script>
+(function(){
+    function setupAutocomplete(inputId, listId) {
+        var input = document.getElementById(inputId);
+        var list  = document.getElementById(listId);
+        if (!input || !list) return;
+        var timer;
+        input.addEventListener('input', function() {
+            clearTimeout(timer);
+            var q = input.value.trim();
+            if (q.length < 3) { list.style.display='none'; return; }
+            timer = setTimeout(function() {
+                fetch('https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&countrycodes=us&limit=5&q=' + encodeURIComponent(q), {
+                    headers: { 'Accept-Language': 'en' }
+                })
+                .then(function(r){ return r.json(); })
+                .then(function(results){
+                    list.innerHTML = '';
+                    if (!results.length) { list.style.display='none'; return; }
+                    results.forEach(function(r){
+                        var li = document.createElement('li');
+                        li.textContent = r.display_name;
+                        li.style.cssText = 'padding:8px 12px;cursor:pointer;border-bottom:1px solid #eee;';
+                        li.addEventListener('mousedown', function(e){
+                            e.preventDefault();
+                            input.value = r.display_name;
+                            list.style.display='none';
+                        });
+                        list.appendChild(li);
+                    });
+                    list.style.display='block';
+                })
+                .catch(function(){ list.style.display='none'; });
+            }, 350);
+        });
+        input.addEventListener('blur', function(){
+            setTimeout(function(){ list.style.display='none'; }, 200);
+        });
+    }
+    setupAutocomplete('addressInput','addressSuggestions');
+    setupAutocomplete('exitAddressInput','exitAddressSuggestions');
+})();
+</script>
 </body>
 </html>
 
