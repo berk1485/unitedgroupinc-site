@@ -669,27 +669,12 @@ document.getElementById('leadForm').addEventListener('submit', function (e) {
     btn.disabled = true;
     btn.textContent = 'Sending...';
 
-    var data = Object.fromEntries(new FormData(form));
-    // Map new fields to API schema
-    var payload = {
-        name:                data.name,
-        email:               data.email,
-        phone:               data.phone,
-        address:             data.address,
-        service_type:        data.damage_type || 'other',
-        contact_method:      data.sms_optin ? 'sms' : 'email',
-        damage_description:  [
-            data.insurance_company ? 'Insurance: ' + data.insurance_company : '',
-            data.no_policy === 'on' ? 'Policy at inspection' : '',
-            data.roof_age ? 'Roof age: ' + data.roof_age : '',
-            data.shingle_type ? 'Shingles: ' + data.shingle_type : ''
-        ].filter(Boolean).join(' | ')
-    };
+    var formData = new FormData(form);
 
-    fetch('/api/leads', {
+    fetch('https://formspree.io/f/mgoqkrlz', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        headers: { 'Accept': 'application/json' },
+        body: formData
     })
     .then(function(r) { return r.json(); })
     .then(function(res) {
@@ -706,27 +691,6 @@ document.getElementById('leadForm').addEventListener('submit', function (e) {
         btn.disabled = false;
         btn.textContent = 'Request Free Inspection \u2192';
         alert('Connection error. Please call us at (856) 254-8367');
-    });
-});
-
-// Exit form also posts as lead
-document.getElementById('exitForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    var data = Object.fromEntries(new FormData(this));
-    fetch('/api/leads', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            name: 'Exit Form Lead',
-            email: 'unknown@unknown.com',
-            phone: data.exit_phone,
-            address: data.exit_address,
-            service_type: 'other',
-            damage_description: 'Via exit intent popup'
-        })
-    }).finally(function() {
-        closePopup();
-        document.getElementById('contact').scrollIntoView({behavior:'smooth'});
     });
 });
 
@@ -758,8 +722,16 @@ function closePopup() {
 }
 document.getElementById('exitForm').addEventListener('submit', function(e) {
     e.preventDefault();
-    closePopup();
-    document.getElementById('contact').scrollIntoView({behavior:'smooth'});
+    var formData = new FormData(this);
+    formData.append('_subject', 'Exit Popup Lead - United Group Restorations');
+    fetch('https://formspree.io/f/mgoqkrlz', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: formData
+    }).finally(function() {
+        closePopup();
+        document.getElementById('contact').scrollIntoView({behavior:'smooth'});
+    });
 });
 </script>
 
