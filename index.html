@@ -28,9 +28,9 @@ body { font-family: Arial, sans-serif; background: #fff; }
 .navbar nav a:hover { opacity: 1; }
 
 /* HERO */
-#heroWrap { height: 550vh; position: relative; }
+#heroWrap { height: 280vh; position: relative; }
 
-/* Snap scroll — hero sections snap into place */
+/* Snap scroll disabled for smooth feel */
 html {
     scroll-snap-type: y proximity;
 }
@@ -590,68 +590,59 @@ footer {
 
         // Sky: rises up and fades out (first drop)
         // Ken Burns zoom on each layer while visible
-        // Drone descent with twist — slight rotateX tilt during transitions
+        // Drone descent with twist - slight rotateX tilt during transitions
         var travel = 0.38 * vh;
 
-        // Transition zones: when are we mid-transition?
-        var trans1 = ease(norm(p, 0.24, 0.52)); // sky->hood transition 0->1
-        var trans2 = ease(norm(p, 0.54, 0.82)); // hood->house transition 0->1
-        // Twist peaks at midpoint of each transition (bell curve)
-        var twist1 = Math.sin(trans1 * Math.PI) * 6;  // max 6deg tilt during transition 1
-        var twist2 = Math.sin(trans2 * Math.PI) * 6;  // max 6deg tilt during transition 2
-        var activeTwist = twist1 + twist2;
-
-        // SKY: drifts up slowly, long crossfade overlap, slight blur on exit
-        var skyMove  = norm(p, 0.0, 1.0);
-        var skyFade  = ease(norm(p, 0.15, 0.65));          // very long fade
-        var skyTwist = ease(norm(p, 0.15, 0.60)) * 7;
-        var skyBlur  = (skyFade * 3).toFixed(1);           // subtle blur as it exits
+        // SKY: visible at start, fades out quickly
+        var skyFade  = ease(norm(p, 0.05, 0.38));
+        var skyTwist = ease(norm(p, 0.05, 0.35)) * 6;
+        var skyBlur  = (skyFade * 3).toFixed(1);
         l1.style.transformOrigin = 'center bottom';
-        l1.style.transform = 'perspective(1200px) translateY(' + (-skyMove * travel * 0.5) + 'px) rotateX(' + skyTwist + 'deg)';
+        l1.style.transform = 'perspective(1200px) translateY(' + (-norm(p,0,1) * travel * 0.4) + 'px) rotateX(' + skyTwist + 'deg)';
         l1.style.opacity = (1 - skyFade).toFixed(3);
         l1.style.filter  = 'blur(' + skyBlur + 'px)';
 
-        // NEIGHBORHOOD: long gentle enter, full hold, long gentle exit with blur
-        var hoodEnter    = ease(norm(p, 0.12, 0.42));      // starts very early
-        var hoodExit     = ease(norm(p, 0.58, 0.88));      // ends very late
-        var hoodDrift    = norm(p, 0.12, 0.90);
+        // NEIGHBORHOOD: enters fast, exits fast
+        var hoodEnter    = ease(norm(p, 0.10, 0.32));
+        var hoodExit     = ease(norm(p, 0.50, 0.72));
+        var hoodDrift    = norm(p, 0.10, 0.72);
         var hoodTwistIn  = (1 - hoodEnter) * -5;
-        var hoodTwistOut = hoodExit * 7;
+        var hoodTwistOut = hoodExit * 6;
         var hoodBlur     = (hoodExit * 3).toFixed(1);
         l2.style.transformOrigin = 'center center';
         l2.style.transform = 'perspective(1200px) translateY(' + (
-            (1 - hoodEnter) * travel * 0.45
-            - hoodDrift * travel * 0.25
+            (1 - hoodEnter) * travel * 0.4
+            - hoodDrift * travel * 0.2
         ) + 'px) rotateX(' + (hoodTwistIn + hoodTwistOut) + 'deg)';
         l2.style.opacity = (hoodEnter * (1 - hoodExit)).toFixed(3);
         l2.style.filter  = 'blur(' + hoodBlur + 'px)';
 
-        // HOUSE: enters early, rises smoothly, blur clears as it settles
-        var houseEnter = ease(norm(p, 0.48, 0.90));
-        var houseDrift = norm(p, 0.48, 1.0) * travel * 0.12;
+        // HOUSE: enters mid-scroll, settles cleanly
+        var houseEnter = ease(norm(p, 0.55, 0.82));
+        var houseDrift = norm(p, 0.55, 1.0) * travel * 0.1;
         var houseTwist = (1 - houseEnter) * -5;
-        var houseBlur  = ((1 - houseEnter) * 4).toFixed(1); // starts blurry, sharpens
+        var houseBlur  = ((1 - houseEnter) * 4).toFixed(1);
         l3.style.transformOrigin = 'center center';
         l3.style.transform = 'perspective(1200px) translateY(' + (
-            (1 - houseEnter) * travel * 0.45 - houseDrift
+            (1 - houseEnter) * travel * 0.4 - houseDrift
         ) + 'px) rotateX(' + houseTwist + 'deg)';
         l3.style.opacity = houseEnter.toFixed(3);
         l3.style.filter  = 'blur(' + houseBlur + 'px)';
 
-        // Messages: fade + slide-up via .visible class
+        // Messages
         var m1 = document.getElementById('msg1');
         var m2 = document.getElementById('msg2');
         var m3 = document.getElementById('msg3');
-        var op1 = 1 - ease(norm(p, 0.20, 0.40));
-        var op2 = ease(norm(p, 0.30, 0.50)) * (1 - ease(norm(p, 0.62, 0.76)));
-        var op3 = ease(norm(p, 0.66, 0.86));
+        var op1 = 1 - ease(norm(p, 0.10, 0.28));
+        var op2 = ease(norm(p, 0.22, 0.40)) * (1 - ease(norm(p, 0.54, 0.68)));
+        var op3 = ease(norm(p, 0.62, 0.80));
         m1.style.opacity = op1.toFixed(3);
         m1.style.transform = 'translateY(' + ((1 - op1) * 24) + 'px)';
         m2.style.opacity = op2.toFixed(3);
-        m2.style.transform = 'translateY(' + ((1 - Math.min(ease(norm(p,0.28,0.48)),1)) * 24) + 'px)';
+        m2.style.transform = 'translateY(' + ((1 - Math.min(ease(norm(p,0.22,0.40)),1)) * 24) + 'px)';
         m3.style.opacity = op3.toFixed(3);
         m3.style.transform = 'translateY(' + ((1 - op3) * 24) + 'px)';
-        m3.style.pointerEvents = p > 0.70 ? 'all' : 'none';
+        m3.style.pointerEvents = p > 0.65 ? 'all' : 'none';
 
         // Progress dots
         var stage = p < 0.33 ? 1 : p < 0.66 ? 2 : 3;
@@ -739,7 +730,7 @@ document.getElementById('exitForm').addEventListener('submit', function(e) {
     });
 });
 
-// Exit intent popup — desktop: mouse leaves top of page only
+// Exit intent popup - desktop: mouse leaves top of page only
 var popupShown = sessionStorage.getItem('popupShown');
 var isMobile = /Mobi|Android/i.test(navigator.userAgent);
 
